@@ -53,7 +53,6 @@ function Game() {
   }
 
   const endGame = () => {
-    alert("Game Over! Your score: " + score);
     setScore(0);
     setHighScore(highScore >= score ? highScore : score);
     setSelectedImages([]);
@@ -99,16 +98,19 @@ function Game() {
 	}, [version, limit])
 
   return (
-		<>
-		<div>
+    <div className="flex flex-col items-center p-4 md:p-8 lg:p-12">
+      {/* Header */}
+      <div className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl text-center mb-4">
+        <h1 className="text-3xl font-bold text-primary">Memory Game</h1>
+      </div>
+
       {/* Version Selector */}
       <Selector
         handleChange={handleVersionChange}
         type={version}
         choices={gameVersions}
         name="version"
-      >
-      </Selector>
+      />
 
       {/* Difficulty Selector */}
       <Selector
@@ -116,9 +118,20 @@ function Game() {
         type={limit}
         choices={difficultyVersions}
         name="difficulty"
-      >
-      </Selector>
-			<ul>
+      />
+
+      {/* Score Section */}
+      <div className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl flex justify-between bg-base-100 p-4 rounded-lg shadow-md mb-4">
+        <div className="text-lg font-semibold">
+          Score: <span className="text-primary">{score}</span>
+        </div>
+        <div className="text-lg font-semibold">
+          High Score: <span className="text-secondary">{highScore >= score ? highScore : score}</span>
+        </div>
+      </div>
+
+      {/* Game Grid */}
+      <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 w-full max-w-lg md:max-w-2xl lg:max-w-4xl bg-base-100 p-4 rounded-lg shadow-md">
         {images.length > 0 ? (
           images.map((image) => (
             <Card
@@ -130,14 +143,9 @@ function Game() {
         ) : (
           <p>Loading images...</p>
         )}
-			</ul>
-			<div>
-				Score: {score}
-				High Score: {highScore >= score ? highScore : score}
-			</div>
-		</div>
-		</>
-	)
+      </div>
+    </div>
+  );
 }
 
 export default Game;

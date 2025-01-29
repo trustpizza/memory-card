@@ -6,7 +6,9 @@ function App() {
 
   return (
     <>
-    <Game></Game>
+    <div className="min-h-screen w-full h-full flex justify-center items-center bg-base-200">
+      <Game/>
+    </div>
     </>
   )
 }
