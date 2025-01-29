@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 import Card from "./Card";
-import GameSelector from "./GameSelector";
+import Selector from "./Selector";
+
+// Game Versions
+const gameVersions = {
+  "Pokemon": "poke",
+  "Gif": "gif",
+}
 
 // API Configurations
 const poke_url = "https://pokeapi.co/api/v2/pokemon/";
@@ -20,7 +26,7 @@ function Game() {
   const [highScore, setHighScore] = useState(0);
   const [score, setScore] = useState(0);
   const [selectedImages, setSelectedImages] = useState([]);
-  const [version, setVersion] = useState("poke");
+  const [version, setVersion] = useState(gameVersions["Pokemon"]);
 
   const handleImageClick = (key) => {
     if (!selectedImages.includes(key)) {
@@ -86,12 +92,14 @@ function Game() {
   return (
 		<>
 		<div>
-      <GameSelector
+      <Selector
         handleChange={handleVersionChange}
         version={version}
+        choices={gameVersions}
+        name="version"
       >
 
-      </GameSelector>
+      </Selector>
 			<ul>
         {images.length > 0 ? (
           images.map((image) => (
