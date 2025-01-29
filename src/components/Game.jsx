@@ -7,14 +7,17 @@ const gameVersions = {
   "Pokemon": "poke",
   "Gif": "gif",
 }
+// Difficulty Versions
+const difficultyVersions = {
+  "Easy": 8,
+  "Medium": 12,
+  "Hard": 24
+}
 
 // API Configurations
 const poke_url = "https://pokeapi.co/api/v2/pokemon/";
 const giffy_url = "https://api.giphy.com/v1/gifs/search";
 const api_key = import.meta.env.VITE_GIFFY_API_KEY;
-
-// Search Limit
-const limit = 5;
 
 // Giffy Query Data
 const queries = ["puppy", "kitten"];
@@ -27,6 +30,8 @@ function Game() {
   const [score, setScore] = useState(0);
   const [selectedImages, setSelectedImages] = useState([]);
   const [version, setVersion] = useState(gameVersions["Pokemon"]);
+  // Search Limit
+  const [limit, setLimit] = useState(difficultyVersions["Easy"]);
 
   const handleImageClick = (key) => {
     if (!selectedImages.includes(key)) {
@@ -39,6 +44,11 @@ function Game() {
 
   const handleVersionChange = (event) => {
     setVersion(event.target.value);
+    endGame();
+  }
+
+  const handleLimitChange = (event) => {
+    setLimit(event.target.value);
     endGame();
   }
 
@@ -84,21 +94,29 @@ function Game() {
       });
       Promise.all(requests).then(() => {
         setImages([...tempImages]);
-        console.log("Fetched Pokémon:", tempImages);
       });
     }
-	}, [version])
+	}, [version, limit])
 
   return (
 		<>
 		<div>
+      {/* Version Selector */}
       <Selector
         handleChange={handleVersionChange}
-        version={version}
+        type={version}
         choices={gameVersions}
         name="version"
       >
+      </Selector>
 
+      {/* Difficulty Selector */}
+      <Selector
+        handleChange={handleLimitChange}
+        type={limit}
+        choices={difficultyVersions}
+        name="difficulty"
+      >
       </Selector>
 			<ul>
         {images.length > 0 ? (
