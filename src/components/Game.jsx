@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
+
 import Card from "./Card";
 import Selector from "./Selector";
+import shuffleArray from "../helpers/shuffleArray";
+import RulesModal from "./RulesModal";
 
 // Game Versions
 const gameVersions = {
   "Pokemon": "poke",
-  "Gif": "gif",
+  "Kittens": "gif",
 }
 // Difficulty Versions
 const difficultyVersions = {
@@ -20,7 +23,7 @@ const giffy_url = "https://api.giphy.com/v1/gifs/search";
 const api_key = import.meta.env.VITE_GIFFY_API_KEY;
 
 // Giffy Query Data
-const queries = ["puppy", "kitten"];
+const queries = ["kitten"]; // You can always add extra query types
 const rating = "g";
 const lang = "en";
 
@@ -32,15 +35,31 @@ function Game() {
   const [version, setVersion] = useState(gameVersions["Pokemon"]);
   // Search Limit
   const [limit, setLimit] = useState(difficultyVersions["Easy"]);
+  const [gameOver, setGameOver] = useState(false);
 
   const handleImageClick = (key) => {
-    if (!selectedImages.includes(key)) {
-      setScore(score + 1);
-      setSelectedImages([...selectedImages, key]);
-    } else {
+    if (gameOver) {
+      // Reset game on click after winning
       endGame();
+      return;
     }
+    
+    if (!selectedImages.includes(key)) {
+      const newSelectedImages = [...selectedImages, key];
+      setSelectedImages(newSelectedImages);
+      setScore(score + 1);
+  
+      if (newSelectedImages.length === images.length) {
+        // Player wins
+        setGameOver(true);
+      }
+    } else {
+      // Player loses
+      setGameOver(true);
+    }
+    shuffleArray(images);
   };
+  
 
   const handleVersionChange = (event) => {
     setVersion(event.target.value);
@@ -53,6 +72,7 @@ function Game() {
   }
 
   const endGame = () => {
+    setGameOver(false);
     setScore(0);
     setHighScore(highScore >= score ? highScore : score);
     setSelectedImages([]);
@@ -95,10 +115,11 @@ function Game() {
         setImages([...tempImages]);
       });
     }
-	}, [version, limit])
+	}, [version, limit, gameOver])
 
   return (
     <div className="flex flex-col items-center p-4 md:p-8 lg:p-12">
+      <RulesModal /> {/* Show rules when page loads */}
       {/* Header */}
       <div className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl text-center mb-4">
         <h1 className="text-3xl font-bold text-primary">Memory Game</h1>
@@ -144,6 +165,26 @@ function Game() {
           <p>Loading images...</p>
         )}
       </div>
+      {/* DaisyUI Modal for Game Over */}
+      {gameOver && (
+        <dialog open className="modal">
+          <div className="modal-box">
+            <h3 className="font-bold text-2xl text-center">
+              {selectedImages.length === images.length ? "🎉 You Win! 🎉" : "❌ Game Over! ❌"}
+            </h3>
+            <p className="py-4 text-center">
+              {selectedImages.length === images.length
+                ? "Great job! You found all the matches!"
+                : "Oops! You clicked the same image twice. Try again!"}
+            </p>
+            <div className="modal-action">
+              <button onClick={endGame} className="btn btn-primary mx-auto">
+                Play Again
+              </button>
+            </div>
+          </div>
+        </dialog>
+      )}
     </div>
   );
 }
